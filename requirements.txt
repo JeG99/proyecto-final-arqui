@@ -12,3 +12,4 @@ bpython
 pytest
 pytest-icdiff
 mypy
+pandas

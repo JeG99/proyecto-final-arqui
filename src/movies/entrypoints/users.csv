@@ -1,0 +1,5 @@
+,email,password,preferences,preference_key
+0,test6@test6.com,test5,"Comedy,Drama,Sci-Fi",1
+1,test6@test5.com,test5,"Comedy,Adventure,Sci-Fi",0
+2,test6@test7.com,test5,"Comedy,Adventure,Drama",1
+3,test6@test1.com,test5,"Comedy,Adventure,Drama",1
