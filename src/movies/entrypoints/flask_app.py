@@ -1,3 +1,4 @@
+from gzip import READ
 import pandas as pd
 import numpy as np
 from flask import Flask, request
@@ -9,17 +10,42 @@ from .models import model_deps, user, movies
 app = Flask(__name__)
 model_deps.start_mappers()
 
-
 @app.route("/hello", methods=["GET"])
 def hello_world():
     return "Hello World!", 200
 
-@app.route('/recommend/<uid>/', methods=['GET'])
-def recommend(uid):
-    movies = pd.read_csv('/src/movies/entrypoints/movie_results.csv')
-    users = pd.read_csv('/src/movies/entrypoints/users.csv')
-    pref_key = users.iloc[int(uid)].preference_key
-    return str(pref_key), 200
+@app.route('/recommend', methods=['POST'])
+def recommend():
+    try:
+        request_body = request.json
+        uid = request_body['uid']
+        rating = request_body['rating']
+        movies = pd.read_csv('/src/movies/entrypoints/movie_results.csv')
+        users = pd.read_csv('/src/movies/entrypoints/users.csv') 
+        if uid < 0 or uid > users.shape[0] - 1:
+            return {
+                'message': 'invalid user id'
+            }, 401
+        elif type(rating) != bool:
+            return {
+                'message': 'rating must be a boolean value'
+            }, 401
+        else:
+            pref_key = users.iloc[int(uid)].preference_key
+            if bool(rating):
+                # Ascending order
+                recommended_movies = movies[movies.preference_key == pref_key].sort_values('rating').movie_title
+            else:
+                # Descending order
+                recommended_movies = movies[movies.preference_key == pref_key].sort_values('rating', ascending=False).movie_title
+
+            return {
+                'recommended_movies': list(recommended_movies)
+            }, 200
+    except:
+        return {
+            'message': 'server error'
+        }, 500
 
 @app.route("/login", methods=["POST"])
 def login():
