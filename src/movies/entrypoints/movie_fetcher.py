@@ -13,6 +13,8 @@ DEFAULT_SESSION_FACTORY = sessionmaker(
         isolation_level="REPEATABLE READ",
     )
 )
+
+## SINGLETON: Punto único de accesso a la base de datos ##
 session = DEFAULT_SESSION_FACTORY()
 
 

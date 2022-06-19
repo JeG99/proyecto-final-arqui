@@ -9,10 +9,9 @@ from .models import model_deps, user, movies
 app = Flask(__name__)
 model_deps.start_mappers()
 
-@app.route("/hello", methods=["GET"])
-def hello_world():
-    return "Hello World!", 200
+## OPEN CLOSED PRINCIPLE ##
 
+## SINGLE RESPONSABILITY PRINCIPLE ##
 @app.route('/recommend', methods=['POST'])
 def recommend():
     try:
@@ -49,6 +48,7 @@ def recommend():
             'message': 'server error'
         }, 500
 
+## SINGLE RESPONSABILITY PRINCIPLE ##
 @app.route("/login", methods=["POST"])
 def login():
     try:
@@ -76,6 +76,8 @@ def login():
             'message': 'server error'
         }, 500
 
+## SINGLE RESPONSABILITY PRINCIPLE ##
+from .utils.preference_key import key
 @app.route("/signup", methods=["POST"])
 def signup():
     try:
@@ -83,13 +85,7 @@ def signup():
         email = request_body['email']
         password = request_body['password']
         preferences = request_body['preferences']
-        genres = preferences.split(',')
-        key = [1 if genre == 'Comedy' 
-            else 2 if genre == 'Drama' 
-            else 3 if genre == 'Sci-Fi'
-            else 4 if genre == 'Romantic'
-            else 5 if genre == 'Adventure' else 0 for genre in genres]
-        preference_key = math.prod(key) % 5 + 1
+        preference_key = key(preferences)
         users = pd.read_csv('/src/movies/entrypoints/users.csv')
         if str(email) not in list(users.email):
             new_user = pd.DataFrame({
