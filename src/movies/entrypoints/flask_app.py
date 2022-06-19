@@ -19,7 +19,10 @@ def recommend():
     try:
         request_body = request.json
         uid = request_body['uid']
-        rating = request_body['rating']
+        if 'rating' in list(request_body.keys()):
+            rating = request_body['rating']
+        else:
+            rating = False
         movies = pd.read_csv('/src/movies/entrypoints/movie_results.csv')
         users = pd.read_csv('/src/movies/entrypoints/users.csv') 
         if uid < 0 or uid > users.shape[0] - 1:
@@ -32,7 +35,7 @@ def recommend():
             }, 401
         else:
             pref_key = users.iloc[int(uid)].preference_key
-            if bool(rating):
+            if rating:
                 # Ascending order
                 recommended_movies = movies[movies.preference_key == pref_key].sort_values('rating').movie_title
             else:
